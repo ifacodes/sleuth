@@ -1,0 +1,2 @@
+# sleuth
+Rust CLI Tracker
