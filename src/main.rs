@@ -1,18 +1,82 @@
-use std::io;
-use tui::Terminal;
-use tui::backend::CrosstermBackend;
-use tui::widgets::{Widget, Block, Borders};
-use tui::layout::{Layout, Constraint, Direction};
+mod config;
+mod events;
+mod app;
+mod ui;
 
-fn main() -> Result<(), io::Error> {
-    let stdout = io::stdout();
-    let backend = CrosstermBackend::new(stdout);
+use crate::{app::App, events::Actions};
+
+use anyhow::Result;
+use std::{
+    io::{stdout, Write},
+    thread,
+    time::{Duration, Instant},
+
+};
+use crossterm::{
+    cursor::MoveTo,
+    event::{DisableMouseCapture, EnableMouseCapture},
+    execute,
+    style::Print,
+    terminal::{disable_raw_mode, enable_raw_mode, EnterAlternateScreen, LeaveAlternateScreen},
+    ExecutableCommand,
+};
+use tui::{
+    Terminal,
+    backend::{Backend, CrosstermBackend}
+};
+
+
+// define exit function
+fn exit() -> Result<()> {
+    disable_raw_mode()?;
+    let mut stdout = stdout();
+    execute!(stdout,LeaveAlternateScreen, DisableMouseCapture)?;
+    Ok(())
+}
+
+/* load config from config directory, or prompt to enter configuration process.
+fn load_config () {
+
+}
+*/
+
+fn main() -> Result<()> {
+    let config: config::Config = argh::from_env();
+
+    let mut stdout = stdout();
+    execute!(stdout, EnterAlternateScreen, EnableMouseCapture)?;
+    enable_raw_mode()?;
+
+    let backend= CrosstermBackend::new(stdout);
     let mut terminal = Terminal::new(backend)?;
-    terminal.draw(|f| {
-        let size = f.size();
-        let block = Block::default()
-            .title("Block")
-            .borders(Borders::ALL);
-        f.render_widget(block, size);
-    })
+    terminal.hide_cursor()?;
+
+    // initialise app here
+    let mut app = App::new("Sueth", config.unicode);
+
+    // initialise event handler here
+    let event_handler = events::EventHandler::new(config.tick_rate);
+
+    loop {
+        terminal.draw(|f| ui::draw(f, &mut app))?;
+
+        match event_handler.next()? {
+            events::Event::Input(action) => {
+                if action == Actions::Quit {
+                    break;
+                }
+            }
+            events::Event::Tick => {
+                app.on_tick();
+            }
+        }
+        // event handling
+        // match event_handler.next()?
+        
+   }
+    // when the loop exits, exit the app
+    terminal.show_cursor()?;
+    exit()?;
+
+    Ok(())
 }
