@@ -8,4 +8,9 @@ edition = "2018"
 
 [dependencies]
 crossterm = "0.17"
-tui = { version = "0.12", default-features = false, features = ['crossterm']} 
+tui = { version = "0.12", default-features = false, features = ['crossterm']}
+argh = "0.1.3"
+anyhow = "1.0.33"
+
+[dev-dependencies]
+dirs = "3.0.1"
