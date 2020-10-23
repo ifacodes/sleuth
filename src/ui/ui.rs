@@ -15,12 +15,12 @@ pub fn draw<B: Backend>(f: &mut Frame<B>, app: &mut App) {
         .direction(Direction::Vertical)
         .constraints(
             [
-                Constraint::Percentage(50),
-                Constraint::Percentage(10),
+                Constraint::Min(0),
+                Constraint::Min(0),
                 Constraint::Percentage(40)
             ].as_ref()
         )
-        .margin(1)
+        .horizontal_margin(1)
         .split(f.size());
         
         let block = Block::default()
