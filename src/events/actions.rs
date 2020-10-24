@@ -17,6 +17,8 @@ pub enum Actions {
     Down,
 
     Unknown,
+
+    ScrollTrack(char),
 }
 
 /*
@@ -35,6 +37,14 @@ impl From<event::KeyEvent> for Actions {
                 code: event::KeyCode::Char('q'),
                 modifiers: event::KeyModifiers::CONTROL,
             } => Actions::Quit,
+            event::KeyEvent {
+                code: event::KeyCode::Char(','),
+                ..
+            } => Actions::ScrollTrack(','),
+            event::KeyEvent {
+                code: event::KeyCode::Char('.'),
+                ..
+            } => Actions::ScrollTrack('.'),
             event::KeyEvent {
                 code: event::KeyCode::Left,
                 ..

@@ -70,8 +70,9 @@ pub struct Pattern {
 impl Default for Pattern {
     // creates a new Pattern with the default length of 128
     fn default() -> Self {
+        let mut tracks = [Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), ];
         Pattern {
-            tracks: [Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), Track::default(), ],
+            tracks: tracks,
             length: 128,
         }
     }
@@ -79,9 +80,10 @@ impl Default for Pattern {
 
 impl Pattern {
     /// creates a new Pattern with a custom length
-    fn new(length: usize) -> Pattern {
+    pub fn new(length: usize) -> Pattern {
+        let mut tracks = [Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), ];
         Pattern {
-            tracks: [Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), Track::new(length), ],
+            tracks: tracks,
             length: length,
         }  
     }
@@ -99,9 +101,41 @@ pub fn draw_display<B> (f: &mut Frame<B>, app: &mut App, area: Rect, pattern: &m
 
         if screen size allows it, tracker should draw all 8 tracks of a pattern
         overwise it should display 4 at a time
-
     */
-}
+
+    // each track is 6? characters long. so 8 * 6 = 48
+
+    let constraints = if app.display8 {
+        vec![Constraint::Ratio(1,8), Constraint::Ratio(1,8), Constraint::Ratio(1,8), Constraint::Ratio(1,8), Constraint::Ratio(1,8), Constraint::Ratio(1,8), Constraint::Ratio(1,8), Constraint::Ratio(1,8)]
+    }
+    else {
+        vec![Constraint::Ratio(1,4), Constraint::Ratio(1,4), Constraint::Ratio(1,4), Constraint::Ratio(1,4)]
+    };
+    
+    let chunks = Layout::default()
+        .constraints(constraints)
+        .direction(Direction::Horizontal)
+        .margin(1)
+        .split(area);
+
+    if app.display8 {
+        draw_track(f, app, chunks[0], &mut pattern.tracks[0]);
+        draw_track(f, app, chunks[1], &mut pattern.tracks[1]);
+        draw_track(f, app, chunks[2], &mut pattern.tracks[2]);
+        draw_track(f, app, chunks[3], &mut pattern.tracks[3]);
+        draw_track(f, app, chunks[4], &mut pattern.tracks[4]);
+        draw_track(f, app, chunks[5], &mut pattern.tracks[5]);
+        draw_track(f, app, chunks[6], &mut pattern.tracks[6]);
+        draw_track(f, app, chunks[7], &mut pattern.tracks[7]);
+    }
+    else {
+        draw_track(f, app, chunks[app.display4[0]], &mut pattern.tracks[app.display4[0]]);
+        draw_track(f, app, chunks[app.display4[1]], &mut pattern.tracks[app.display4[1]]);
+        draw_track(f, app, chunks[app.display4[2]], &mut pattern.tracks[app.display4[2]]);
+        draw_track(f, app, chunks[app.display4[3]], &mut pattern.tracks[app.display4[3]]);
+    }
+    
+} 
 
 /// draws an individual track of the tracker
 fn draw_track<B> (f: &mut Frame<B>, app: &mut App, area: Rect, track: &mut Track) where B: Backend, {
@@ -111,4 +145,6 @@ fn draw_track<B> (f: &mut Frame<B>, app: &mut App, area: Rect, track: &mut Track
 
         no header
     */
+    
+
 }

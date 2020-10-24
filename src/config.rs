@@ -9,5 +9,10 @@ pub struct Config {
 
     /// enable unicode symbol usage
     #[argh(option, default = "true")]
-    pub unicode: bool
+    pub unicode: bool,
+
+    /// enable toggle 4 / 8 track display
+    #[argh(option, default = "true")]
+    pub display8: bool,
+
 }

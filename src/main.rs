@@ -52,7 +52,7 @@ fn main() -> Result<()> {
     terminal.hide_cursor()?;
 
     // initialise app here
-    let mut app = App::new("Sueth", config.unicode);
+    let mut app = App::new("Sueth", config.unicode, config.display8);
 
     // initialise event handler here
     let event_handler = events::EventHandler::new(config.tick_rate);
@@ -64,6 +64,13 @@ fn main() -> Result<()> {
             events::Event::Input(action) => {
                 if action == Actions::Quit {
                     break;
+                }
+                // maybe I should use a handler for these two updates and have it run during the on_tick() event
+                if action == Actions::ScrollTrack(',') && app.display4[0] != 0 {
+                    app.display4 = app.display4.iter().map(|x| x - 1).collect();
+                }
+                if action == Actions::ScrollTrack('.') && app.display4[3] != 8 {
+                    app.display4 = app.display4.iter().map(|x| x + 1).collect();
                 }
             }
             events::Event::Tick => {
