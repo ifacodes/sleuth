@@ -37,3 +37,9 @@ pub fn draw<B: Backend>(f: &mut Frame<B>, app: &mut App) {
 fn draw_bottom_text<B: Backend>(f: &mut Frame<B>, area: Rect) {
     
 }
+
+fn test_tables<B> (f: &mut Frame<B>, area: Rect) where B: Backend {
+
+    
+
+}
